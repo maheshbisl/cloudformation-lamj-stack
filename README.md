@@ -28,6 +28,7 @@ Provide a Cloud formation template defining a redundant, secure and cost effecti
 * Build an AMI for stable and uniform platform using [Packer](https://www.packer.io/intro/why.html)
 * Provide CI/CD using [CircleCi](https://circleci.com/gh/maheshbisl/cloudformation-lamj-stack/tree/master)
   * CircleCI configuration (.circleci/config.yaml)
+  * [Need to set AWS credential in CircleCI to run this](https://discuss.circleci.com/t/aws-cli-keys-after-august-31st/23060/4)
 * Provide Shell Scripts:
   * install.sh - install dependencies to build and deploy
   * build-deploy.sh - build the war, packer based AMI and deploy CloudFormation stacks using sceptre
