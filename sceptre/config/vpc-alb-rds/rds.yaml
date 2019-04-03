@@ -1,0 +1,5 @@
+dependencies:
+- vpc-alb-rds/vpc.yaml
+
+stack_name: rds
+template_path: rds.yaml
