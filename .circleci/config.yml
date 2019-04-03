@@ -37,6 +37,6 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
       
-      - run: bash install.sh
+      - run: bash -ex install.sh
 
-      - run: bash build-deploy.sh
+      - run: bash -ex build-deploy.sh
