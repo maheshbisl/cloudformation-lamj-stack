@@ -31,7 +31,8 @@
       "inline": [
         "sudo amazon-linux-extras install tomcat8.5 -y",
         "sudo systemctl enable tomcat",
-        "sudo cp /tmp/packer/mahesh-webserver.war /usr/share/tomcat/webapps/"
+        "sudo cp /tmp/packer/mahesh-webserver.war /usr/share/tomcat/webapps/",
+        "sudo cat /tmp/packer/environment.txt"
       ],
       "type": "shell"
     }
