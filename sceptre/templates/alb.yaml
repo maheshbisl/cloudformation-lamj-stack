@@ -1,0 +1,119 @@
+
+
+Description: Application LoadBalancer
+
+Resources:
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ALB security group
+      VpcId: !ImportValue VPC
+
+  0000080IngressRule:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: 0.0.0.0/0
+
+  HTTPListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      Protocol: HTTP
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn:
+          Ref: DefaultTargetGroup
+      LoadBalancerArn: !Ref ALB
+      Port: 80
+
+  ALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Subnets:
+      - !ImportValue PublicSubnet1
+      - !ImportValue PublicSubnet2
+      LoadBalancerAttributes:
+      - Key: idle_timeout.timeout_seconds
+        Value: '50'
+      SecurityGroups:
+      - Ref: SecurityGroup
+
+  DefaultTargetGroup:
+      Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+      Properties:
+        Port: 8080
+        Protocol: HTTP
+        VpcId: !ImportValue VPC
+
+  TargetGroupSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ALB security group
+      VpcId: !ImportValue VPC
+      SecurityGroupIngress:
+      - IpProtocol: -1
+        CidrIp: 0.0.0.0/0
+
+  TargetGroupInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+      - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+
+  TargetGroupInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref TargetGroupInstanceRole
+
+Outputs:
+  ALBDNS:
+    Value: !GetAtt ALB.DNSName
+    Export:
+      Name: ALBDNSName
+
+  TargetGroupSecurityGroup:
+    Value: !GetAtt TargetGroupSecurityGroup.GroupId
+    Export:
+      Name: TargetGroupSecurityGroup
+
+  TargetGroupInstanceRole:
+    Value: !GetAtt TargetGroupInstanceRole.Arn
+    Export:
+      Name: TargetGroupInstanceRole
+
+  TargetGroupInstanceProfile:
+    Value: !GetAtt TargetGroupInstanceProfile.Arn
+    Export:
+      Name: TargetGroupInstanceProfile
+
+  ALBHTTPListernArn:
+    Description: Arn of ALB HTTPListener for 80
+    Value: !Ref HTTPListener
+    Export:
+      Name: ALBHTTPListernArn
+
+  ALBArn:
+    Description: Arn of ALB
+    Value: !Ref ALB
+    Export:
+      Name: ALBArn
+
+  DefaultTargetGroupArn:
+    Description: Arn of the Default TargetGroup
+    Value: !Ref DefaultTargetGroup
+    Export:
+      Name: DefaultTargetGroupArn
