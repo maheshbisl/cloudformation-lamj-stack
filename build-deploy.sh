@@ -15,7 +15,7 @@ sceptre_launch vpc-alb-rds
 #pass DNS of DB and loadbalancer to packer
 function get_export()
 {
-    echo `aws cloudformation list-exports | jq -r '.Exports[] | select(.Name=="'${1}'") | .Value'`
+    echo `aws cloudformation list-exports --region ap-southeast-2 | jq -r '.Exports[] | select(.Name=="'${1}'") | .Value'`
 }
 DB_DNS=$(get_export maheshdbInternalDNS)
 LB_DNS=$(get_export ALBDNSName)
