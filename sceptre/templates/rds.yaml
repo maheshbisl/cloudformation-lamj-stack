@@ -22,13 +22,10 @@ Resources:
   RDS: 
     Type: AWS::RDS::DBInstance
     Properties:
-
       DBName: maheshdb
       Engine: MySQL
       MasterUsername: root
       MasterUserPassword: a1b2c3d4e5
-
-
       DBSecurityGroups:
       - !Ref DBSecurityGroup
       AllocatedStorage: 20
@@ -36,7 +33,6 @@ Resources:
       EngineVersion: 5.6.40
       PubliclyAccessible: false
       DBSubnetGroupName: !Ref DBSubnetGroup
-
 
 Outputs:
   DBInstanceIdentifier:
