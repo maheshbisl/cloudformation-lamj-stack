@@ -4,9 +4,14 @@ mvn integration-test
 ls target/mahesh-webserver.war
 ln -f target/mahesh-webserver.war packer/mahesh-webserver.war
 
-cd sceptre
-sceptre launch --yes vpc-alb-rds
-cd -
+function sceptre_launch()
+{
+    cd sceptre
+    sceptre launch --yes $1
+    cd -
+}
+
+sceptre_launch vpc-alb-rds
 
 #pass DNS of DB and loadbalancer to packer
 function get_export()
@@ -28,3 +33,7 @@ export AMI=$(tail -5 /tmp/ami-output | grep -o 'ami-.*')
 cd -
 
 echo ${AMI}
+sceptre_launch asg
+
+# test if the deployment is ok
+curl --silent --output /dev/null  http://${LB_DNS}/mahesh-webserver/ && echo "Deployment Success"

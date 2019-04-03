@@ -1,0 +1,37 @@
+Description: AutoScalingGroup 
+
+Parameters:
+  AMI:
+    Type: String
+
+Resources:
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        IamInstanceProfile:
+          Arn: !ImportValue TargetGroupInstanceProfile
+        ImageId: !Ref AMI
+        SecurityGroupIds: [ !ImportValue TargetGroupSecurityGroup ]
+        InstanceType: t3.nano
+
+  ServerGroup:
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        MaxBatchSize: 1
+        MinInstancesInService: 1
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier:
+      - !ImportValue PrivateSubnet1
+      - !ImportValue PrivateSubnet2
+      TargetGroupARNs: [ !ImportValue DefaultTargetGroupArn ]
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+      MaxSize: 2
+      MinSize: 1
+      Tags:
+      - Key: Name
+        Value: mahesh
+        PropagateAtLaunch: true

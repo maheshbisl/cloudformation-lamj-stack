@@ -1,0 +1,4 @@
+stack_name: asg-mahesh-webserver
+template_path: asg.yaml
+parameters:
+  AMI: !environment_variable AMI
